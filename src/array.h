@@ -200,11 +200,35 @@ static inline bool ARRAY_FUNC(copy)(ARRAY_NAME *dst, ARRAY_NAME *src, size_t n) 
     dst->n = n;
     return ret;
 }
-static inline ARRAY_NAME *ARRAY_FUNC(new_copy)(ARRAY_NAME *vector, size_t n) {
+static inline ARRAY_NAME *ARRAY_FUNC(new_copy)(ARRAY_NAME *array, size_t n) {
     ARRAY_NAME *cpy = ARRAY_FUNC(new_size)(n);
-    if (!ARRAY_FUNC(copy)(cpy, vector, n)) return NULL;
+    if (!ARRAY_FUNC(copy)(cpy, array, n)) return NULL;
     return cpy;
 }
+
+#ifdef ARRAY_IS_NUMERIC
+static inline ARRAY_NAME *ARRAY_FUNC(new_value)(size_t n, ARRAY_TYPE value) {
+    ARRAY_NAME *array = ARRAY_FUNC(new_size)(n);
+    if (array == NULL) return NULL;
+    for (size_t i = 0; i < n; i++) {
+        array->a[i] = value;
+    }
+    array->n = n;
+    return array;
+}
+
+static inline ARRAY_NAME *ARRAY_FUNC(new_ones)(size_t n) {
+    return ARRAY_FUNC(new_value)(n, (ARRAY_TYPE)1);
+}
+
+static inline ARRAY_NAME *ARRAY_FUNC(new_zeros)(size_t n) {
+    ARRAY_NAME *array = ARRAY_FUNC(new_size)(n);
+    if (array == NULL) return NULL;
+    ARRAY_FUNC(zero)(array->a, n);
+    array->n = n;
+    return array;
+}
+#endif
 
 static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
     if (array == NULL) return;
