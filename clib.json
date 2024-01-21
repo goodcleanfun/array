@@ -1,0 +1,16 @@
+{
+    "name": "array",
+    "version": "0.0.0",
+    "repo": "goodcleanfun/array",
+    "description": "Generic, dynamic array",
+    "keywords": ["array", "vector", "generic", "dynamic"],
+    "license": "MIT",
+    "dependencies": {
+    },
+    "development": {
+      "silentbicycle/greatest": "*"
+    },
+    "src": [
+      "src/array.h"
+    ]
+  }
