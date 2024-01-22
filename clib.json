@@ -6,6 +6,7 @@
     "keywords": ["array", "vector", "generic", "dynamic"],
     "license": "MIT",
     "dependencies": {
+      "goodcleanfun/aligned": "*"
     },
     "development": {
       "silentbicycle/greatest": "*"
