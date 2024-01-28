@@ -34,10 +34,22 @@ TEST test_array_resizing(void) {
     ASSERT_EQ(w->m, 16 * 3 / 2);
     ASSERT_EQ(w->n, 17);
 
-    test_array_extend(v, w);
-    expected_size = expected_size * 3 / 2 * 3 /2;
+    test_array_concat(v, w);
+    expected_size = expected_size * 3 / 2 * 3 / 2;
     ASSERT_EQ(v->m, expected_size);
     ASSERT_EQ(v->n, 27);
+    size_t current_cap = v->m;
+    ASSERT(test_array_resize_to_fit(v, current_cap));
+    ASSERT_EQ(v->m, current_cap);
+
+    test_array_extend(v, (int32_t[]){1, 2, 3}, 3);
+    expected_size = expected_size * 3 / 2;
+    ASSERT_EQ(v->m, expected_size);
+    ASSERT_EQ(v->n, 30);
+    current_cap = v->m;
+    ASSERT(test_array_resize_to_fit(v, (current_cap * 3 / 2) - 1));
+    expected_size = expected_size * 3 / 2;
+    ASSERT_EQ(v->m, expected_size);
 
     test_array_destroy(v);
     PASS();
