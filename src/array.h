@@ -104,6 +104,7 @@ static inline bool ARRAY_FUNC(push)(ARRAY_NAME *array, ARRAY_TYPE value) {
     size_t cap = array->m;
     if (array->n >= cap) {
         size_t new_cap = cap > 0 ? ARRAY_GROW(cap) : DEFAULT_ARRAY_SIZE;
+        if (cap == new_cap) new_cap++;
         ARRAY_TYPE *ptr = realloc(array->a, sizeof(ARRAY_TYPE) * new_cap);
         if (ptr == NULL) {
             return false;
