@@ -25,8 +25,8 @@
 #define DEFAULT_ARRAY_SIZE 8
 #endif
 
-#ifndef ARRAY_GROW
-#define ARRAY_GROW(x) ((x) * 3 / 2)
+#ifndef ARRAY_GROWTH_FUNC
+#define ARRAY_GROWTH_FUNC(x) ((x) * 3 / 2)
 #endif
 
 #define CONCAT_(a, b) a ## b
@@ -79,6 +79,19 @@ static inline bool ARRAY_FUNC(resize)(ARRAY_NAME *array, size_t size) {
     return true;
 }
 
+static inline bool ARRAY_FUNC(resize_to_fit)(ARRAY_NAME *array, size_t needed_capacity) {
+    size_t cap = array->m;
+    if (cap >= needed_capacity) return true;
+    if (cap == 0) cap = DEFAULT_ARRAY_SIZE;
+    size_t prev_cap = cap;
+    while (cap < needed_capacity) {
+        cap = ARRAY_GROWTH_FUNC(prev_cap);
+        if (cap == prev_cap) cap++;
+        prev_cap = cap;
+    }
+    return ARRAY_FUNC(resize)(array, cap);
+}
+
 static inline bool ARRAY_FUNC(resize_aligned)(ARRAY_NAME *array, size_t size, size_t alignment) {
     if (size <= array->m) return true;
     ARRAY_TYPE *ptr = aligned_resize(array->a, sizeof(ARRAY_TYPE) * array->m, sizeof(ARRAY_TYPE) * size, alignment);
@@ -103,34 +116,23 @@ static inline bool ARRAY_FUNC(resize_fixed_aligned)(ARRAY_NAME *array, size_t si
 static inline bool ARRAY_FUNC(push)(ARRAY_NAME *array, ARRAY_TYPE value) {
     size_t cap = array->m;
     if (array->n >= cap) {
-        size_t new_cap = cap > 0 ? ARRAY_GROW(cap) : DEFAULT_ARRAY_SIZE;
-        if (cap == new_cap) new_cap++;
-        ARRAY_TYPE *ptr = realloc(array->a, sizeof(ARRAY_TYPE) * new_cap);
-        if (ptr == NULL) {
-            return false;
-        }
-        array->a = ptr;
-        array->m = new_cap;
+        if (!ARRAY_FUNC(resize_to_fit)(array, array->n + 1)) return false;
     }
     array->a[array->n++] = value;
     return true;
 }
 
-static inline bool ARRAY_FUNC(extend)(ARRAY_NAME *array, ARRAY_NAME *other) {
-    bool ret = false;
-    size_t new_size = array->n + other->n;
+static inline bool ARRAY_FUNC(extend)(ARRAY_NAME *array, ARRAY_TYPE *values, size_t n) {
+    size_t new_size = array->n + n;
     size_t current_capacity = array->m;
-    if (new_size > current_capacity) {
-        size_t capacity = current_capacity;
-        while (capacity < new_size) {
-            capacity = capacity * 3 / 2;
-        }
-        ret = ARRAY_FUNC(resize)(array, capacity);
-        if (!ret) return false;
-    }
-    memcpy(array->a + array->n, other->a, other->n * sizeof(ARRAY_TYPE));
+    if (!ARRAY_FUNC(resize_to_fit)(array, new_size)) return false;
+    memcpy(array->a + array->n, values, n * sizeof(ARRAY_TYPE));
     array->n = new_size;
-    return ret;
+    return true;
+}
+
+static inline bool ARRAY_FUNC(concat)(ARRAY_NAME *array, ARRAY_NAME *other) {
+    return ARRAY_FUNC(extend)(array, other->a, other->n);
 }
 
 static inline bool ARRAY_FUNC(pop)(ARRAY_NAME *array, ARRAY_TYPE *result) {
