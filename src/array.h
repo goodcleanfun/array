@@ -135,8 +135,12 @@ static inline bool ARRAY_FUNC(concat)(ARRAY_NAME *array, ARRAY_NAME *other) {
     return ARRAY_FUNC(extend)(array, other->a, other->n);
 }
 
+static inline bool ARRAY_FUNC(empty)(ARRAY_NAME *array) {
+    return array->n == 0;
+}
+
 static inline bool ARRAY_FUNC(pop)(ARRAY_NAME *array, ARRAY_TYPE *result) {
-    if (array->n == 0) return false;
+    if (ARRAY_FUNC(empty)(array)) return false;
     *result = array->a[--array->n];
     return true;
 }

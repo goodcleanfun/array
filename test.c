@@ -11,6 +11,7 @@
 TEST test_array_resizing(void) {
     test_array *v = test_array_new();
     ASSERT_EQ(v->m, DEFAULT_ARRAY_SIZE);
+    ASSERT(test_array_empty(v));
     ASSERT_EQ(v->n, 0);
 
     for (int32_t i = 0; i < 10; i++) {
@@ -18,6 +19,7 @@ TEST test_array_resizing(void) {
     }
     size_t expected_size = DEFAULT_ARRAY_SIZE * 3 / 2;
     ASSERT_EQ(v->m, expected_size);
+    ASSERT(!test_array_empty(v));
     ASSERT_EQ(v->n, 10);
 
     for (int32_t i = 0; i < 10; i++) {
