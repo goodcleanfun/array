@@ -163,7 +163,6 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_copy)(ARRAY_NAME *array, size_t n) {
     return cpy;
 }
 
-#ifdef ARRAY_IS_NUMERIC
 static inline ARRAY_NAME *ARRAY_FUNC(new_value)(size_t n, ARRAY_TYPE value) {
     ARRAY_NAME *array = ARRAY_FUNC(new_size)(n);
     if (array == NULL) return NULL;
@@ -174,6 +173,7 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_value)(size_t n, ARRAY_TYPE value) {
     return array;
 }
 
+#ifdef ARRAY_IS_NUMERIC
 static inline ARRAY_NAME *ARRAY_FUNC(new_ones)(size_t n) {
     return ARRAY_FUNC(new_value)(n, (ARRAY_TYPE)1);
 }
