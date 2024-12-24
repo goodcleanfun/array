@@ -76,7 +76,11 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_size_fixed)(size_t size) {
 
 static inline bool ARRAY_FUNC(resize)(ARRAY_NAME *array, size_t size) {
     if (size <= array->m) return true;
+    #ifndef ARRAY_REALLOC_NEEDS_PREV_SIZE
     ARRAY_TYPE *ptr = ARRAY_REALLOC(array->a, sizeof(ARRAY_TYPE) * size);
+    #else
+    ARRAY_TYPE *ptr = ARRAY_REALLOC(array->a, sizeof(ARRAY_TYPE) * array->m, sizeof(ARRAY_TYPE) * size);
+    #endif
     if (ptr == NULL) return false;
     array->a = ptr;
     array->m = size;
