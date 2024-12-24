@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "aligned/aligned.h"
 
 #endif // ARRAY_H
 
@@ -29,6 +28,21 @@
 #define ARRAY_GROWTH_FUNC(x) ((x) * 3 / 2)
 #endif
 
+#ifndef ARRAY_MALLOC
+#define ARRAY_MALLOC malloc
+#define ARRAY_MALLOC_DEFINED
+#endif
+
+#ifndef ARRAY_REALLOC
+#define ARRAY_REALLOC realloc
+#define ARRAY_REALLOC_DEFINED
+#endif
+
+#ifndef ARRAY_FREE
+#define ARRAY_FREE free
+#define ARRAY_FREE_DEFINED
+#endif
+
 #define CONCAT_(a, b) a ## b
 #define CONCAT(a, b) CONCAT_(a, b)
 #define ARRAY_FUNC(func) CONCAT(ARRAY_NAME, _##func)
@@ -43,7 +57,7 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_size)(size_t size) {
     ARRAY_NAME *array = malloc(sizeof(ARRAY_NAME));
     if (array == NULL) return NULL;
     array->n = array->m = 0;
-    array->a = malloc((size > 0 ? size : 1) * sizeof(ARRAY_TYPE));
+    array->a = ARRAY_MALLOC((size > 0 ? size : 1) * sizeof(ARRAY_TYPE));
     if (array->a == NULL) return NULL;
     array->m = size;
     return array;
@@ -60,19 +74,9 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_size_fixed)(size_t size) {
     return array;
 }
 
-static inline ARRAY_NAME *ARRAY_FUNC(new_aligned)(size_t size, size_t alignment) {
-    ARRAY_NAME *array = malloc(sizeof(ARRAY_NAME));
-    if (array == NULL) return NULL;
-    array->n = array->m = 0;
-    array->a = aligned_malloc(size * sizeof(ARRAY_TYPE), alignment);
-    if (array->a == NULL) return NULL;
-    array->m = size;
-    return array;
-}
-
 static inline bool ARRAY_FUNC(resize)(ARRAY_NAME *array, size_t size) {
     if (size <= array->m) return true;
-    ARRAY_TYPE *ptr = realloc(array->a, sizeof(ARRAY_TYPE) * size);
+    ARRAY_TYPE *ptr = ARRAY_REALLOC(array->a, sizeof(ARRAY_TYPE) * size);
     if (ptr == NULL) return false;
     array->a = ptr;
     array->m = size;
@@ -92,23 +96,8 @@ static inline bool ARRAY_FUNC(resize_to_fit)(ARRAY_NAME *array, size_t needed_ca
     return ARRAY_FUNC(resize)(array, cap);
 }
 
-static inline bool ARRAY_FUNC(resize_aligned)(ARRAY_NAME *array, size_t size, size_t alignment) {
-    if (size <= array->m) return true;
-    ARRAY_TYPE *ptr = aligned_resize(array->a, sizeof(ARRAY_TYPE) * array->m, sizeof(ARRAY_TYPE) * size, alignment);
-    if (ptr == NULL) return false;
-    array->a = ptr;
-    array->m = size;
-    return true;
-}
-
 static inline bool ARRAY_FUNC(resize_fixed)(ARRAY_NAME *array, size_t size) {
     if (!ARRAY_FUNC(resize)(array, size)) return false;
-    array->n = size;
-    return true;
-}
-
-static inline bool ARRAY_FUNC(resize_fixed_aligned)(ARRAY_NAME *array, size_t size, size_t alignment) {
-    if (!ARRAY_FUNC(resize_aligned)(array, size, alignment)) return false;
     array->n = size;
     return true;
 }
@@ -195,20 +184,7 @@ static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
             ARRAY_FREE_DATA(array->a[i]);
         }
     #endif
-        free(array->a);
-    }
-    free(array);
-}
-
-static inline void ARRAY_FUNC(destroy_aligned)(ARRAY_NAME *array) {
-    if (array == NULL) return;
-    if (array->a != NULL) {
-    #ifdef ARRAY_FREE_DATA
-        for (size_t i = 0; i < array->n; i++) {
-            ARRAY_FREE_DATA(array->a[i]);
-        }
-    #endif
-        aligned_free(array->a);
+        ARRAY_FREE(array->a);
     }
     free(array);
 }
@@ -219,4 +195,16 @@ static inline void ARRAY_FUNC(destroy_aligned)(ARRAY_NAME *array) {
 #ifdef NO_DEFAULT_ARRAY_SIZE
 #undef NO_DEFAULT_ARRAY_SIZE
 #undef DEFAULT_ARRAY_SIZE
+#endif
+#ifdef ARRAY_MALLOC_DEFINED
+#undef ARRAY_MALLOC
+#undef ARRAY_MALLOC_DEFINED
+#endif
+#ifdef ARRAY_REALLOC_DEFINED
+#undef ARRAY_REALLOC
+#undef ARRAY_REALLOC_DEFINED
+#endif
+#ifdef ARRAY_FREE_DEFINED
+#undef ARRAY_FREE
+#undef ARRAY_FREE_DEFINED
 #endif

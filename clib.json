@@ -5,9 +5,6 @@
     "description": "Generic, dynamic array",
     "keywords": ["array", "vector", "generic", "dynamic"],
     "license": "MIT",
-    "dependencies": {
-      "goodcleanfun/aligned": "*"
-    },
     "development": {
       "silentbicycle/greatest": "*"
     },
