@@ -106,6 +106,26 @@ static inline bool ARRAY_FUNC(resize_fixed)(ARRAY_NAME *array, size_t size) {
     return true;
 }
 
+static inline ARRAY_TYPE ARRAY_FUNC(get_unchecked)(ARRAY_NAME *array, size_t index) {
+    return array->a[index];
+}
+
+static inline bool ARRAY_FUNC(get)(ARRAY_NAME *array, size_t index, ARRAY_TYPE *result) {
+    if (index >= array->n) return false;
+    *result = array->a[index];
+    return true;
+}
+
+static inline bool ARRAY_FUNC(set)(ARRAY_NAME *array, size_t index, ARRAY_TYPE value) {
+    if (index >= array->n) return false;
+    array->a[index] = value;
+    return true;
+}
+
+static inline void ARRAY_FUNC(set_unchecked)(ARRAY_NAME *array, size_t index, ARRAY_TYPE value) {
+    array->a[index] = value;
+}
+
 static inline bool ARRAY_FUNC(push)(ARRAY_NAME *array, ARRAY_TYPE value) {
     size_t cap = array->m;
     if (array->n >= cap) {
