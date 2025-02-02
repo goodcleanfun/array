@@ -8,19 +8,19 @@
 #undef ARRAY_NAME
 #undef ARRAY_TYPE
 
-TEST test_array_resizing(void) {
+TEST test_dynamic_array(void) {
     test_array *v = test_array_new();
-    ASSERT_EQ(v->m, DEFAULT_ARRAY_SIZE);
+    ASSERT_EQ(test_array_capacity(v), DEFAULT_ARRAY_SIZE);
     ASSERT(test_array_empty(v));
-    ASSERT_EQ(v->n, 0);
+    ASSERT_EQ(test_array_len(v), 0);
 
     for (int32_t i = 0; i < 10; i++) {
         test_array_push(v, i);
     }
     size_t expected_size = DEFAULT_ARRAY_SIZE * 3 / 2;
-    ASSERT_EQ(v->m, expected_size);
+    ASSERT_EQ(test_array_capacity(v), expected_size);
     ASSERT(!test_array_empty(v));
-    ASSERT_EQ(v->n, 10);
+    ASSERT_EQ(test_array_len(v), 10);
 
     for (size_t i = 0; i < 10; i++) {
         test_array_set(v, i, 10 - i);
@@ -38,31 +38,31 @@ TEST test_array_resizing(void) {
     }
 
     test_array *w = test_array_new_size(16);
-    ASSERT_EQ(w->m, 16);
-    ASSERT_EQ(w->n, 0);
+    ASSERT_EQ(test_array_capacity(w), 16);
+    ASSERT_EQ(test_array_len(w), 0);
 
     for (int32_t i = 0; i < 17; i++) {
         test_array_push(w, i);
     }
-    ASSERT_EQ(w->m, 16 * 3 / 2);
-    ASSERT_EQ(w->n, 17);
+    ASSERT_EQ(test_array_capacity(w), 16 * 3 / 2);
+    ASSERT_EQ(test_array_len(w), 17);
 
     test_array_concat(v, w);
     expected_size = expected_size * 3 / 2 * 3 / 2;
-    ASSERT_EQ(v->m, expected_size);
-    ASSERT_EQ(v->n, 27);
+    ASSERT_EQ(test_array_capacity(v), expected_size);
+    ASSERT_EQ(test_array_len(v), 27);
     size_t current_cap = v->m;
     ASSERT(test_array_resize_to_fit(v, current_cap));
-    ASSERT_EQ(v->m, current_cap);
+    ASSERT_EQ(test_array_capacity(v), current_cap);
 
     test_array_extend(v, (int32_t[]){1, 2, 3}, 3);
     expected_size = expected_size * 3 / 2;
-    ASSERT_EQ(v->m, expected_size);
-    ASSERT_EQ(v->n, 30);
-    current_cap = v->m;
+    ASSERT_EQ(test_array_capacity(v), expected_size);
+    ASSERT_EQ(test_array_len(v), 30);
+    current_cap = test_array_capacity(v);
     ASSERT(test_array_resize_to_fit(v, (current_cap * 3 / 2) - 1));
     expected_size = expected_size * 3 / 2;
-    ASSERT_EQ(v->m, expected_size);
+    ASSERT_EQ(test_array_capacity(v), expected_size);
 
     test_array_destroy(v);
     PASS();
@@ -74,7 +74,7 @@ GREATEST_MAIN_DEFS();
 int32_t main(int32_t argc, char **argv) {
     GREATEST_MAIN_BEGIN();      /* command-line options, initialization. */
 
-    RUN_TEST(test_array_resizing);
+    RUN_TEST(test_dynamic_array);
 
     GREATEST_MAIN_END();        /* display results */
 }
