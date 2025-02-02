@@ -106,6 +106,14 @@ static inline bool ARRAY_FUNC(resize_fixed)(ARRAY_NAME *array, size_t size) {
     return true;
 }
 
+static size_t ARRAY_FUNC(capacity)(ARRAY_NAME *array) {
+    return array->m;
+}
+
+static size_t ARRAY_FUNC(len)(ARRAY_NAME *array) {
+    return array->n;
+}
+
 static inline ARRAY_TYPE ARRAY_FUNC(get_unchecked)(ARRAY_NAME *array, size_t index) {
     return array->a[index];
 }
