@@ -22,8 +22,19 @@ TEST test_array_resizing(void) {
     ASSERT(!test_array_empty(v));
     ASSERT_EQ(v->n, 10);
 
+    for (size_t i = 0; i < 10; i++) {
+        test_array_set(v, i, 10 - i);
+    }
+
+    int32_t test_value;
     for (int32_t i = 0; i < 10; i++) {
-        ASSERT_EQ(v->a[i], i);
+        ASSERT_EQ(test_array_get_unchecked(v, i), 10 - i);
+        ASSERT(test_array_get(v, i, &test_value));
+        ASSERT_EQ(test_value, 10 - i);
+    }
+
+    for (int32_t i = 0; i < 10; i++) {
+        test_array_set_unchecked(v, i, i);
     }
 
     test_array *w = test_array_new_size(16);
