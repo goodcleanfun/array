@@ -68,6 +68,60 @@ TEST test_dynamic_array(void) {
     PASS();
 }
 
+TEST test_array_sorting(void) {
+    test_array *v = test_array_new();
+
+    // Test empty array
+    test_array_sort(v);
+    ASSERT(test_array_empty(v));
+
+    // Test single element
+    test_array_push(v, 1);
+    test_array_sort(v);
+    ASSERT_EQ(test_array_get_unchecked(v, 0), 1);
+
+    // Test multiple elements
+    test_array_clear(v);
+    int32_t values[] = {5, 2, 8, 1, 9, 3, 7, 4, 6};
+    test_array_extend(v, values, 9);
+
+    // Test sort
+    test_array_sort(v);
+    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+        ASSERT(test_array_get_unchecked(v, i) <= test_array_get_unchecked(v, i + 1));
+    }
+
+    // Test sort_reverse
+    test_array_sort_reverse(v);
+    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+        ASSERT(test_array_get_unchecked(v, i) >= test_array_get_unchecked(v, i + 1));
+    }
+
+    // Test argsort
+    test_array_clear(v);
+    test_array_extend(v, values, 9);
+    size_t *indices = malloc(test_array_len(v) * sizeof(size_t));
+    ASSERT(test_array_argsort(v, indices));
+    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+        size_t idx1 = indices[i];
+        size_t idx2 = indices[i + 1];
+        ASSERT(test_array_get_unchecked(v, idx1) <= test_array_get_unchecked(v, idx2));
+    }
+    // Test argsort_reverse
+    test_array_clear(v);
+    test_array_extend(v, values, 9);
+    ASSERT(test_array_argsort_reverse(v, indices));
+    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+        size_t idx1 = indices[i];
+        size_t idx2 = indices[i + 1];
+        ASSERT(test_array_get_unchecked(v, idx1) >= test_array_get_unchecked(v, idx2));
+    }
+    free(indices);
+
+    test_array_destroy(v);
+    PASS();
+}
+
 /* Add definitions that need to be in the test runner's main file. */
 GREATEST_MAIN_DEFS();
 
@@ -75,6 +129,7 @@ int32_t main(int32_t argc, char **argv) {
     GREATEST_MAIN_BEGIN();      /* command-line options, initialization. */
 
     RUN_TEST(test_dynamic_array);
+    RUN_TEST(test_array_sorting);
 
     GREATEST_MAIN_END();        /* display results */
 }
