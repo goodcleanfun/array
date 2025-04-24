@@ -47,7 +47,6 @@
 #define CONCAT(a, b) CONCAT_(a, b)
 #define ARRAY_FUNC(func) CONCAT(ARRAY_NAME, _##func)
 
-
 typedef struct {
     size_t n, m;
     ARRAY_TYPE *a;
@@ -219,6 +218,71 @@ static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
         ARRAY_FREE(array->a);
     }
     free(array);
+}
+
+#define INTROSORT_NAME ARRAY_NAME
+#define INTROSORT_TYPE ARRAY_TYPE
+#ifdef ARRAY_SORT_LT
+#define INTROSORT_LT(a, b) ARRAY_SORT_LT(a, b)
+#endif
+#include "sort/introsort.h"
+#ifdef INTROSORT_LT
+#undef INTROSORT_LT
+#endif
+#undef INTROSORT_NAME
+#undef INTROSORT_TYPE
+
+static inline bool ARRAY_FUNC(sort)(ARRAY_NAME *array) {
+    if (array == NULL || array->n <= 1) return false;
+    ARRAY_FUNC(introsort)(array->n, array->a);
+    return true;
+}
+
+static inline bool ARRAY_FUNC(sort_reverse)(ARRAY_NAME *array) {
+    if (array == NULL || array->n <= 1) return false;
+    ARRAY_FUNC(introsort_reverse)(array->n, array->a);
+    return true;
+}
+
+#define ARRAY_INDEX_NAME CONCAT(ARRAY_NAME, _indices)
+#define ARRAY_INDEX_FUNC(func) CONCAT(ARRAY_NAME, _indices_##func)
+
+#define INTROSORT_NAME ARRAY_INDEX_NAME
+#define INTROSORT_TYPE size_t
+#ifdef ARRAY_SORT_LT
+#define INTROSORT_LT(a, b, aux) ARRAY_SORT_LT(((aux)[(a)], (aux)[(b)]))
+#endif
+#define INTROSORT_AUX_TYPE ARRAY_TYPE
+#include "sort/introsort.h"
+#ifdef INTROSORT_LT
+#undef INTROSORT_LT
+#endif
+#undef INTROSORT_NAME
+#undef INTROSORT_TYPE
+#undef INTROSORT_AUX_TYPE
+
+#undef ARRAY_INDEX_NAME
+#undef ARRAY_INDEX_TYPE
+
+
+static inline bool ARRAY_FUNC(argsort)(ARRAY_NAME *array, size_t *indices) {
+    if (array == NULL) return NULL;
+    if (indices == NULL) return NULL;
+    for (size_t i = 0; i < array->n; i++) {
+        indices[i] = i;
+    }
+    ARRAY_INDEX_FUNC(introsort)(array->n, indices, array->a);
+    return true;
+}
+
+static inline bool ARRAY_FUNC(argsort_reverse)(ARRAY_NAME *array, size_t *indices) {
+    if (array == NULL) return false;
+    if (indices == NULL) return false;
+    for (size_t i = 0; i < array->n; i++) {
+        indices[i] = i;
+    }
+    ARRAY_INDEX_FUNC(introsort_reverse)(array->n, indices, array->a);
+    return true;
 }
 
 #undef CONCAT_
