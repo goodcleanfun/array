@@ -6,9 +6,11 @@
     "keywords": ["array", "vector", "generic", "dynamic"],
     "license": "MIT",
     "development": {
-      "silentbicycle/greatest": "*"
+      "silentbicycle/greatest": "*",
+      "goodcleanfun/sort": "*"
     },
     "src": [
-      "src/array.h"
+      "src/array.h",
+      "src/sort.h"
     ]
   }
