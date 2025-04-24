@@ -1,13 +1,10 @@
 {
     "name": "array",
-    "version": "0.4.0",
+    "version": "0.3.3",
     "repo": "goodcleanfun/array",
     "description": "Generic, dynamic array",
     "keywords": ["array", "vector", "generic", "dynamic"],
     "license": "MIT",
-    "dependencies": {
-      "goodcleanfun/sort": "*"
-    },
     "development": {
       "silentbicycle/greatest": "*"
     },
