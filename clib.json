@@ -1,6 +1,6 @@
 {
     "name": "array",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "repo": "goodcleanfun/array",
     "description": "Generic, dynamic array",
     "keywords": ["array", "vector", "generic", "dynamic"],
