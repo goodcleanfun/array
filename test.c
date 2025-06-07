@@ -13,7 +13,7 @@ TEST test_dynamic_array(void) {
     test_array *v = test_array_new();
     ASSERT_EQ(test_array_capacity(v), DEFAULT_ARRAY_SIZE);
     ASSERT(test_array_empty(v));
-    ASSERT_EQ(test_array_len(v), 0);
+    ASSERT_EQ(test_array_size(v), 0);
 
     for (int32_t i = 0; i < 10; i++) {
         test_array_push(v, i);
@@ -21,7 +21,7 @@ TEST test_dynamic_array(void) {
     size_t expected_size = DEFAULT_ARRAY_SIZE * 3 / 2;
     ASSERT_EQ(test_array_capacity(v), expected_size);
     ASSERT(!test_array_empty(v));
-    ASSERT_EQ(test_array_len(v), 10);
+    ASSERT_EQ(test_array_size(v), 10);
 
     for (size_t i = 0; i < 10; i++) {
         test_array_set(v, i, 10 - i);
@@ -40,18 +40,18 @@ TEST test_dynamic_array(void) {
 
     test_array *w = test_array_new_size(16);
     ASSERT_EQ(test_array_capacity(w), 16);
-    ASSERT_EQ(test_array_len(w), 0);
+    ASSERT_EQ(test_array_size(w), 0);
 
     for (int32_t i = 0; i < 17; i++) {
         test_array_push(w, i);
     }
     ASSERT_EQ(test_array_capacity(w), 16 * 3 / 2);
-    ASSERT_EQ(test_array_len(w), 17);
+    ASSERT_EQ(test_array_size(w), 17);
 
     test_array_concat(v, w);
     expected_size = expected_size * 3 / 2 * 3 / 2;
     ASSERT_EQ(test_array_capacity(v), expected_size);
-    ASSERT_EQ(test_array_len(v), 27);
+    ASSERT_EQ(test_array_size(v), 27);
     size_t current_cap = v->m;
     ASSERT(test_array_resize_to_fit(v, current_cap));
     ASSERT_EQ(test_array_capacity(v), current_cap);
@@ -59,7 +59,7 @@ TEST test_dynamic_array(void) {
     test_array_extend(v, (int32_t[]){1, 2, 3}, 3);
     expected_size = expected_size * 3 / 2;
     ASSERT_EQ(test_array_capacity(v), expected_size);
-    ASSERT_EQ(test_array_len(v), 30);
+    ASSERT_EQ(test_array_size(v), 30);
     current_cap = test_array_capacity(v);
     ASSERT(test_array_resize_to_fit(v, (current_cap * 3 / 2) - 1));
     expected_size = expected_size * 3 / 2;
@@ -88,22 +88,22 @@ TEST test_array_sorting(void) {
 
     // Test sort
     test_array_sort(v);
-    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+    for (size_t i = 0; i < test_array_size(v) - 1; i++) {
         ASSERT(test_array_get_unchecked(v, i) <= test_array_get_unchecked(v, i + 1));
     }
 
     // Test sort_reverse
     test_array_sort_reverse(v);
-    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+    for (size_t i = 0; i < test_array_size(v) - 1; i++) {
         ASSERT(test_array_get_unchecked(v, i) >= test_array_get_unchecked(v, i + 1));
     }
 
     // Test argsort
     test_array_clear(v);
     test_array_extend(v, values, 9);
-    size_t *indices = malloc(test_array_len(v) * sizeof(size_t));
+    size_t *indices = malloc(test_array_size(v) * sizeof(size_t));
     ASSERT(test_array_argsort(v, indices));
-    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+    for (size_t i = 0; i < test_array_size(v) - 1; i++) {
         size_t idx1 = indices[i];
         size_t idx2 = indices[i + 1];
         ASSERT(test_array_get_unchecked(v, idx1) <= test_array_get_unchecked(v, idx2));
@@ -112,7 +112,7 @@ TEST test_array_sorting(void) {
     test_array_clear(v);
     test_array_extend(v, values, 9);
     ASSERT(test_array_argsort_reverse(v, indices));
-    for (size_t i = 0; i < test_array_len(v) - 1; i++) {
+    for (size_t i = 0; i < test_array_size(v) - 1; i++) {
         size_t idx1 = indices[i];
         size_t idx2 = indices[i + 1];
         ASSERT(test_array_get_unchecked(v, idx1) >= test_array_get_unchecked(v, idx2));

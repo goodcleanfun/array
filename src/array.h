@@ -109,7 +109,7 @@ static size_t ARRAY_FUNC(capacity)(ARRAY_NAME *array) {
     return array->m;
 }
 
-static size_t ARRAY_FUNC(len)(ARRAY_NAME *array) {
+static size_t ARRAY_FUNC(size)(ARRAY_NAME *array) {
     return array->n;
 }
 
