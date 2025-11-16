@@ -33,9 +33,19 @@
 #define ARRAY_MALLOC_DEFINED
 #endif
 
-#ifndef ARRAY_REALLOC
-#define ARRAY_REALLOC realloc
-#define ARRAY_REALLOC_DEFINED
+#ifndef ARRAY_DATA_MALLOC
+#define ARRAY_DATA_MALLOC malloc
+#define ARRAY_DATA_MALLOC_DEFINED
+#endif
+
+#ifndef ARRAY_DATA_REALLOC
+#define ARRAY_DATA_REALLOC realloc
+#define ARRAY_DATA_REALLOC_DEFINED
+#endif
+
+#ifndef ARRAY_DATA_FREE
+#define ARRAY_DATA_FREE free
+#define ARRAY_DATA_FREE_DEFINED
 #endif
 
 #ifndef ARRAY_FREE
@@ -53,10 +63,10 @@ typedef struct {
 } ARRAY_NAME;
 
 static inline ARRAY_NAME *ARRAY_FUNC(new_size)(size_t size) {
-    ARRAY_NAME *array = malloc(sizeof(ARRAY_NAME));
+    ARRAY_NAME *array = ARRAY_MALLOC(sizeof(ARRAY_NAME));
     if (array == NULL) return NULL;
     array->n = array->m = 0;
-    array->a = ARRAY_MALLOC((size > 0 ? size : 1) * sizeof(ARRAY_TYPE));
+    array->a = ARRAY_DATA_MALLOC((size > 0 ? size : 1) * sizeof(ARRAY_TYPE));
     if (array->a == NULL) return NULL;
     array->m = size;
     return array;
@@ -75,10 +85,10 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_size_fixed)(size_t size) {
 
 static inline bool ARRAY_FUNC(resize)(ARRAY_NAME *array, size_t size) {
     if (size <= array->m) return true;
-    #ifndef ARRAY_REALLOC_NEEDS_PREV_SIZE
-    ARRAY_TYPE *ptr = ARRAY_REALLOC(array->a, sizeof(ARRAY_TYPE) * size);
+    #ifndef ARRAY_DATA_REALLOC_NEEDS_PREV_SIZE
+    ARRAY_TYPE *ptr = ARRAY_DATA_REALLOC(array->a, sizeof(ARRAY_TYPE) * size);
     #else
-    ARRAY_TYPE *ptr = ARRAY_REALLOC(array->a, sizeof(ARRAY_TYPE) * array->m, sizeof(ARRAY_TYPE) * size);
+    ARRAY_TYPE *ptr = ARRAY_DATA_REALLOC(array->a, sizeof(ARRAY_TYPE) * array->m, sizeof(ARRAY_TYPE) * size);
     #endif
     if (ptr == NULL) return false;
     array->a = ptr;
@@ -210,14 +220,14 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_zeros)(size_t n) {
 static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
     if (array == NULL) return;
     if (array->a != NULL) {
-    #ifdef ARRAY_FREE_DATA
+    #ifdef ARRAY_DATA_FREE_ELEMENT
         for (size_t i = 0; i < array->n; i++) {
-            ARRAY_FREE_DATA(array->a[i]);
+            ARRAY_DATA_FREE_ELEMENT(array->a[i]);
         }
     #endif
-        ARRAY_FREE(array->a);
+        ARRAY_DATA_FREE(array->a);
     }
-    free(array);
+    ARRAY_FREE(array);
 }
 
 #undef CONCAT_
@@ -231,9 +241,13 @@ static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
 #undef ARRAY_MALLOC
 #undef ARRAY_MALLOC_DEFINED
 #endif
-#ifdef ARRAY_REALLOC_DEFINED
-#undef ARRAY_REALLOC
-#undef ARRAY_REALLOC_DEFINED
+#ifdef ARRAY_DATA_MALLOC_DEFINED
+#undef ARRAY_DATA_MALLOC
+#undef ARRAY_DATA_MALLOC_DEFINED
+#endif
+#ifdef ARRAY_DATA_REALLOC_DEFINED
+#undef ARRAY_DATA_REALLOC
+#undef ARRAY_DATA_REALLOC_DEFINED
 #endif
 #ifdef ARRAY_FREE_DEFINED
 #undef ARRAY_FREE
