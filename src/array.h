@@ -154,7 +154,6 @@ static inline bool ARRAY_FUNC(push)(ARRAY_NAME *array, ARRAY_TYPE value) {
 
 static inline bool ARRAY_FUNC(extend)(ARRAY_NAME *array, ARRAY_TYPE *values, size_t n) {
     size_t new_size = array->n + n;
-    size_t current_capacity = array->m;
     if (!ARRAY_FUNC(resize_to_fit)(array, new_size)) return false;
     memcpy(array->a + array->n, values, n * sizeof(ARRAY_TYPE));
     array->n = new_size;
