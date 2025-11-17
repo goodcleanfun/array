@@ -179,7 +179,8 @@ static inline void ARRAY_FUNC(clear)(ARRAY_NAME *array) {
     array->n = 0;
 }
 
-static inline bool ARRAY_FUNC(copy)(ARRAY_NAME *dst, ARRAY_NAME *src, size_t n) {
+static inline bool ARRAY_FUNC(copy)(ARRAY_NAME *dst, ARRAY_NAME  *src, size_t n) {
+    if (dst == NULL || src == NULL || n == 0 || dst == src || src->a == dst->a) return false;
     bool ret = true;
     if (dst->m < n) ret = ARRAY_FUNC(resize)(dst, n);
     if (!ret) return false;
