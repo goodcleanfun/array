@@ -143,6 +143,12 @@ static inline bool ARRAY_FUNC(get)(ARRAY_NAME *array, size_t index, ARRAY_TYPE *
     return true;
 }
 
+static inline bool ARRAY_FUNC(at)(ARRAY_NAME *array, size_t index, ARRAY_TYPE **result) {
+    if (index >= array->n) return false;
+    *result = array->a + index;
+    return true;
+}
+
 static inline bool ARRAY_FUNC(set)(ARRAY_NAME *array, size_t index, ARRAY_TYPE value) {
     if (index >= array->n) return false;
     array->a[index] = value;

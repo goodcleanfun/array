@@ -28,10 +28,14 @@ TEST test_dynamic_array(void) {
     }
 
     int32_t test_value;
+    int32_t *test_value_ptr;
     for (int32_t i = 0; i < 10; i++) {
         ASSERT_EQ(test_array_get_unchecked(v, i), 10 - i);
         ASSERT(test_array_get(v, i, &test_value));
         ASSERT_EQ(test_value, 10 - i);
+        ASSERT(test_array_at(v, i, &test_value_ptr));
+        ASSERT_EQ(test_value_ptr, v->a + i);
+        ASSERT_EQ(*test_value_ptr, 10 - i);
     }
 
     for (int32_t i = 0; i < 10; i++) {
