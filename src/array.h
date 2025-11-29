@@ -71,6 +71,13 @@ static inline bool ARRAY_FUNC(init_size)(ARRAY_NAME *array, size_t size) {
     return true;
 }
 
+static inline bool ARRAY_FUNC(init_size_fixed)(ARRAY_NAME *array, size_t size) {
+    if (array == NULL) return false;
+    if (!ARRAY_FUNC(init_size)(array, size)) return false;
+    array->n = size;
+    return true;
+}
+
 static inline bool ARRAY_FUNC(init)(ARRAY_NAME *array) {
     return ARRAY_FUNC(init_size)(array, DEFAULT_ARRAY_SIZE);
 }
