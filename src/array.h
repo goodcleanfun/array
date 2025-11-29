@@ -62,13 +62,23 @@ typedef struct {
     ARRAY_TYPE *a;
 } ARRAY_NAME;
 
+static inline bool ARRAY_FUNC(init_size)(ARRAY_NAME *array, size_t size) {
+    if (array == NULL) return false;
+    array->n = array->m = 0;
+    array->a = ARRAY_DATA_MALLOC((size > 0 ? size : 1) * sizeof(ARRAY_TYPE));
+    if (array->a == NULL) return false;
+    array->m = size;
+    return true;
+}
+
+static inline bool ARRAY_FUNC(init)(ARRAY_NAME *array) {
+    return ARRAY_FUNC(init_size)(array, DEFAULT_ARRAY_SIZE);
+}
+
 static inline ARRAY_NAME *ARRAY_FUNC(new_size)(size_t size) {
     ARRAY_NAME *array = ARRAY_MALLOC(sizeof(ARRAY_NAME));
     if (array == NULL) return NULL;
-    array->n = array->m = 0;
-    array->a = ARRAY_DATA_MALLOC((size > 0 ? size : 1) * sizeof(ARRAY_TYPE));
-    if (array->a == NULL) return NULL;
-    array->m = size;
+    if (!ARRAY_FUNC(init_size)(array, size)) return NULL;
     return array;
 }
 
