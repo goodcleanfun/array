@@ -240,7 +240,7 @@ static inline ARRAY_NAME *ARRAY_FUNC(new_zeros)(size_t n) {
 }
 #endif
 
-static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
+static inline void ARRAY_FUNC(destroy_data)(ARRAY_NAME *array) {
     if (array == NULL) return;
     if (array->a != NULL) {
     #ifdef ARRAY_DATA_FREE_ELEMENT
@@ -250,6 +250,11 @@ static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
     #endif
         ARRAY_DATA_FREE(array->a);
     }
+}
+
+static inline void ARRAY_FUNC(destroy)(ARRAY_NAME *array) {
+    if (array == NULL) return;
+    ARRAY_FUNC(destroy_data)(array);
     ARRAY_FREE(array);
 }
 
